@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="hu" class="h-full">
+<html lang="hu" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+  <title>MondatMester – Angol mondatgyakorló</title>
+
+  <!-- PWA & Mobile Full-Screen Head Meta Tags -->
   <meta name="robots" content="noindex, nofollow">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
-
-  <!-- iOS Safari teljes képernyős támogatás -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="MondatMester">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <title>MondatMester – Angol mondatgyakorló</title>
-  
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -22,16 +22,13 @@
       darkMode: 'class',
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-          },
           colors: {
             brand: {
-              50: '#f0f7ff',
-              100: '#e0effe',
+              50: '#eff6ff',
+              100: '#dbeafe',
               500: '#3b82f6',
               600: '#2563eb',
-              700: '#1d4ed8',
+              700: '#1d4ed8'
             }
           }
         }
@@ -39,632 +36,617 @@
     }
   </script>
 
-  <!-- Google Fonts: Inter -->
+  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    /* Smooth transitions and custom scrollbar styling */
-    body {
-      font-family: 'Inter', sans-serif;
+    /* Strict Mobile Viewport Overflow Protection */
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
-    .dot-pulse {
-      animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+    *, ::before, ::after {
+      box-sizing: border-box;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+
+    /* PWA Safe Area Inset Support */
+    .pt-safe {
+      padding-top: max(0.5rem, env(safe-area-inset-top));
+    }
+    .pb-safe {
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+    
+    /* Smooth Transitions & Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+    
+    .glass-card {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
   </style>
 </head>
-<body class="h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col transition-colors duration-200">
+<body class="bg-slate-900 text-slate-100 min-h-screen transition-colors duration-200">
 
-  <!-- ==================== HEADER ==================== -->
-  <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur border-b border-slate-200 dark:border-slate-800">
-    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
-      
-      <!-- Brand Logo & Title -->
-      <div class="flex items-center gap-2">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C20.832 18.477 19.247 18 17.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-          </svg>
-        </div>
-        <div>
-          <h1 class="font-bold text-lg leading-tight tracking-tight text-slate-900 dark:text-white">MondatMester</h1>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">Angol mondatgyakorló</p>
-        </div>
-      </div>
+  <!-- Root Application Container with overflow prevention -->
+  <div id="app" class="w-full max-w-full overflow-x-hidden min-h-screen flex flex-col justify-between pt-safe pb-safe">
 
-      <!-- View Navigation Tabs -->
-      <nav class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-sm font-medium">
-        <button id="tab-practice" onclick="switchTab('practice')" class="px-3 sm:px-4 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition shadow-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
-          Gyakorlás
-        </button>
-        <button id="tab-stats" onclick="switchTab('stats')" class="px-3 sm:px-4 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition">
-          Statisztika
-        </button>
-      </nav>
-
-      <!-- Right Action Controls -->
-      <div class="flex items-center gap-1.5 sm:gap-2">
-        <!-- Live Sync Status Badge -->
-        <div id="sync-status" class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-          <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-          <span id="sync-status-text">Nincs beállítva</span>
-        </div>
-
-        <!-- Manual Refresh / Sync Button -->
-        <button onclick="fetchDataFromBackend(true)" title="Adatok frissítése" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-          <svg id="sync-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-          </svg>
-        </button>
-
-        <!-- Dark Mode Toggle Button -->
-        <button onclick="toggleDarkMode()" title="Sötét / Világos mód" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-          <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-          </svg>
-          <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-          </svg>
-        </button>
-
-        <!-- Settings Gear Icon -->
-        <button onclick="openSettingsModal()" title="Beállítások" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- ==================== MAIN CONTENT AREA ==================== -->
-  <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col justify-start">
-
-    <!-- ================= VIEW 1: PRACTICE ================= -->
-    <section id="view-practice" class="space-y-6">
-      
-      <!-- Top Filters and Controls -->
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+    <!-- Top Sticky Header -->
+    <header class="sticky top-0 z-30 w-full border-b border-slate-800 bg-slate-900/90 dark:bg-slate-900/90 dark:border-slate-800 bg-white/90 border-slate-200 backdrop-blur">
+      <div class="w-full max-w-2xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex flex-col gap-2.5">
         
-        <div class="flex flex-wrap items-center gap-2">
-          <!-- Category Dropdown -->
-          <div class="flex items-center gap-1.5">
-            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Téma:</span>
-            <select id="filter-category" onchange="onCategoryChange()" class="bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs sm:text-sm font-medium px-3 py-1.5 focus:ring-2 focus:ring-brand-500 outline-none cursor-pointer">
-              <option value="ALL">Minden téma</option>
-            </select>
-          </div>
-
-          <!-- Practice Mode Selector -->
-          <div class="flex items-center gap-1.5">
-            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Mód:</span>
-            <select id="filter-mode" onchange="onModeChange()" class="bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs sm:text-sm font-medium px-3 py-1.5 focus:ring-2 focus:ring-brand-500 outline-none cursor-pointer">
-              <option value="SMART">Okos sorsolás (súlyozott)</option>
-              <option value="ERROR_ONLY">Hibajavító kör (gyenge mondatok)</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Session Stats Counter -->
-        <div class="flex items-center justify-between sm:justify-end gap-3 text-xs sm:text-sm font-semibold bg-slate-50 dark:bg-slate-800/60 px-3.5 py-1.5 rounded-xl border border-slate-100 dark:border-slate-800">
-          <span id="session-count" class="text-slate-600 dark:text-slate-300">0 válasz</span>
-          <span class="text-slate-300 dark:text-slate-700">|</span>
-          <span id="session-accuracy" class="text-emerald-600 dark:text-emerald-400">100% pontosság</span>
-        </div>
-      </div>
-
-      <!-- PRACTICE CARD -->
-      <div id="practice-card" class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 shadow-sm transition-all space-y-6">
-        
-        <!-- Card Header Info -->
-        <div class="flex items-center justify-between flex-wrap gap-2">
-          <div class="flex items-center gap-2">
-            <span id="card-category" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-500/20">
-              Kategória
-            </span>
-            <span id="card-id" class="text-xs font-mono font-medium text-slate-400">
-              #ID
-            </span>
-          </div>
-
-          <!-- Mastery Level Dots & Historical Accuracy -->
-          <div class="flex items-center gap-3">
-            <span id="card-history-accuracy" class="text-xs font-semibold text-slate-500 dark:text-slate-400" title="Korrekt válaszarány a teljes múltban">
-              Helyes: 0% (0/0)
-            </span>
-            <div id="card-level-dots" class="flex items-center gap-1" title="Tudásszint (0-5)">
-              <!-- Dots rendered dynamically -->
+        <!-- Top Bar Row: Logo + Controls -->
+        <div class="flex items-center justify-between w-full">
+          <!-- Logo & Title -->
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 shrink-0">
+              <i data-lucide="book-open" class="w-5 h-5"></i>
             </div>
-          </div>
-        </div>
-
-        <!-- Hungarian Sentence Prompt -->
-        <div class="space-y-1">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Fordítsd angolra:</p>
-          <h2 id="card-hu-text" class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-white leading-relaxed">
-            Mondat betöltése...
-          </h2>
-        </div>
-
-        <!-- User Answer Input Field -->
-        <div class="space-y-3">
-          <div class="relative">
-            <textarea id="answer-input" rows="2" placeholder="Írd ide az angol fordítást..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 focus:border-brand-500 dark:focus:border-brand-500 rounded-2xl p-4 text-base sm:text-lg font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:ring-4 focus:ring-brand-500/10 outline-none resize-none transition" autofocus></textarea>
-          </div>
-
-          <div class="flex items-center justify-between gap-3 flex-wrap">
-            <p class="text-xs text-slate-400 hidden sm:block">
-              Tipp: Nyomj <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono text-xs">Enter</kbd>-t az ellenőrzéshez!
-            </p>
-            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-              <button id="btn-submit" onclick="submitAnswer()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow-lg shadow-brand-600/25 transition active:scale-95 flex items-center justify-center gap-2">
-                <span>Ellenőrzés</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- FEEDBACK PANEL (Hidden by default) -->
-        <div id="feedback-panel" class="hidden rounded-2xl p-5 border space-y-4 transition-all">
-          
-          <!-- Header Status & Title -->
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <div id="feedback-badge-icon" class="w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                ✓
+            <div class="truncate">
+              <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white leading-tight truncate">MondatMester</h1>
+              <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span id="sync-status-text" class="truncate">Demo mód</span>
               </div>
-              <h3 id="feedback-title" class="font-bold text-lg">Helyes válasz!</h3>
             </div>
           </div>
 
-          <!-- Word-Level Diff Display (Shown on Error) -->
-          <div id="feedback-diff-container" class="hidden space-y-1 bg-white/60 dark:bg-slate-950/60 p-3.5 rounded-xl border border-slate-200/60 dark:border-slate-800/60">
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Eltérés a legközelebbi helyes válaszhoz képest:</p>
-            <div id="feedback-diff-content" class="text-base font-medium flex flex-wrap gap-1.5 items-center">
-              <!-- Diff words injected dynamically -->
-            </div>
-          </div>
+          <!-- Desktop View Switcher (Hidden on Mobile) -->
+          <nav class="hidden sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/50">
+            <button id="nav-practice-desk" onclick="switchTab('practice')" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all shadow-sm bg-blue-600 text-white">
+              Gyakorlás
+            </button>
+            <button id="nav-stats-desk" onclick="switchTab('stats')" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+              Statisztika
+            </button>
+          </nav>
 
-          <!-- Accepted English Variants -->
-          <div class="space-y-1">
-            <p id="feedback-variants-label" class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Elfogadott angol verziók:</p>
-            <ul id="feedback-variants-list" class="list-disc list-inside text-sm font-medium space-y-0.5">
-              <!-- Variants list -->
-            </ul>
-          </div>
-
-          <!-- Grammar Note (if present) -->
-          <div id="feedback-note-container" class="hidden text-xs sm:text-sm bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 p-3 rounded-xl border border-amber-200 dark:border-amber-800/50 space-y-0.5">
-            <span class="font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">Megjegyzés:</span>
-            <p id="feedback-note-text"></p>
-          </div>
-
-          <!-- Action Buttons in Feedback -->
-          <div class="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/40 dark:border-slate-700/40">
-            <div class="flex items-center gap-2 flex-wrap">
-              <!-- Revert wrong to correct -->
-              <button id="btn-override-correct" onclick="overrideAsCorrect()" class="hidden text-xs font-semibold px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition">
-                ✓ Mégis jó volt
-              </button>
-              <!-- Add typed answer as new accepted alternative -->
-              <button id="btn-add-alternative" onclick="addCurrentAsAlternative()" class="hidden text-xs font-semibold px-3 py-2 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 hover:bg-indigo-200 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition">
-                + Hozzáadás jó válaszként
-              </button>
-            </div>
-
-            <!-- Next Sentence Button -->
-            <button id="btn-next" onclick="nextSentence()" class="px-6 py-2.5 rounded-xl bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 font-semibold shadow transition flex items-center gap-2 ml-auto">
-              <span>Következő mondat</span>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-              </svg>
+          <!-- Top Action Buttons -->
+          <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+            <button onclick="syncData()" title="Adatok frissítése" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95">
+              <i data-lucide="rotate-cw" id="sync-icon" class="w-5 h-5"></i>
+            </button>
+            <button onclick="toggleTheme()" title="Téma váltása" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95">
+              <i data-lucide="sun" id="theme-icon-sun" class="w-5 h-5 hidden"></i>
+              <i data-lucide="moon" id="theme-icon-moon" class="w-5 h-5"></i>
+            </button>
+            <button onclick="openSettingsModal()" title="Beállítások" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95">
+              <i data-lucide="settings" class="w-5 h-5"></i>
             </button>
           </div>
         </div>
 
-      </div>
-    </section>
-
-    <!-- ================= VIEW 2: STATISTICS ================= -->
-    <section id="view-stats" class="hidden space-y-6">
-      
-      <!-- 4 KPI Summary Cards -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
-          <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Összes mondat</p>
-          <p id="kpi-total" class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">0</p>
-        </div>
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
-          <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Megtanult (4-5. szint)</p>
-          <p id="kpi-mastered" class="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400">0</p>
-        </div>
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
-          <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Találati arány</p>
-          <p id="kpi-accuracy" class="text-2xl sm:text-3xl font-bold text-brand-600 dark:text-brand-400">0%</p>
-        </div>
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
-          <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Összes válasz</p>
-          <p id="kpi-attempts" class="text-2xl sm:text-3xl font-bold text-indigo-600 dark:text-indigo-400">0</p>
-        </div>
-      </div>
-
-      <!-- Category Performance Breakdown -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-        <h3 class="font-bold text-base text-slate-900 dark:text-white">Témakörök szerinti haladás</h3>
-        <div id="category-progress-list" class="space-y-3">
-          <!-- Category bars rendered dynamically -->
-        </div>
-      </div>
-
-      <!-- Sentence Table with Live Search & Sort -->
-      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden space-y-4 p-4 sm:p-5">
-        
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <h3 class="font-bold text-base text-slate-900 dark:text-white">Mondatbázis részletei</h3>
-          
-          <div class="flex items-center gap-2 flex-wrap">
-            <!-- Search input -->
-            <input type="text" id="stats-search" oninput="renderStatsTable()" placeholder="Keresés (HU, EN, ID, Kategória)..." class="bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs sm:text-sm px-3.5 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-brand-500 outline-none w-full sm:w-60">
-            
-            <!-- Sort dropdown -->
-            <select id="stats-sort" onchange="renderStatsTable()" class="bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs sm:text-sm font-medium px-3 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none cursor-pointer">
-              <option value="ERRORS_DESC">Legtöbb hiba elöl</option>
-              <option value="ACCURACY_ASC">Leggyengébb arány elöl</option>
-              <option value="LEVEL_ASC">Legkisebb tudásszint</option>
-              <option value="ID_ASC">ID szerint</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Table Container -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs sm:text-sm">
-            <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 uppercase text-[11px] font-semibold tracking-wider border-b border-slate-200 dark:border-slate-800">
-              <tr>
-                <th class="p-3">ID / Téma</th>
-                <th class="p-3">Magyar mondat</th>
-                <th class="p-3">Angol verziók</th>
-                <th class="p-3 text-center">Szint</th>
-                <th class="p-3 text-right">Próbák / Helyes</th>
-              </tr>
-            </thead>
-            <tbody id="stats-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
-              <!-- Sentence rows injected dynamically -->
-            </tbody>
-          </table>
-        </div>
+        <!-- Mobile View Switcher (Segmented Control Row - Zero Overflow) -->
+        <nav class="flex sm:hidden items-center grid grid-cols-2 gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/50 w-full">
+          <button id="nav-practice-mob" onclick="switchTab('practice')" class="w-full py-2 text-center text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-sm bg-blue-600 text-white">
+            Gyakorlás
+          </button>
+          <button id="nav-stats-mob" onclick="switchTab('stats')" class="w-full py-2 text-center text-xs sm:text-sm font-semibold rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+            Statisztika
+          </button>
+        </nav>
 
       </div>
+    </header>
 
-    </section>
+    <!-- Main Content Area -->
+    <main class="w-full max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 flex-1 flex flex-col gap-4">
 
-  </main>
-
-  <!-- ==================== SETTINGS MODAL ==================== -->
-  <div id="modal-settings" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm transition-opacity">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 max-w-lg w-full shadow-2xl space-y-6 relative">
-      
-      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+      <!-- Demo Warning Banner (if no backend configured) -->
+      <div id="demo-banner" class="w-full p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs sm:text-sm flex items-center justify-between gap-2">
         <div class="flex items-center gap-2">
-          <div class="w-9 h-9 rounded-xl bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold">
-            ⚙️
-          </div>
-          <div>
-            <h3 class="font-bold text-lg text-slate-900 dark:text-white">Beállítások</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Google Apps Script API összekötés</p>
-          </div>
+          <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
+          <span><strong>Demo üzemmód:</strong> Csatlakoztasd a Google Táblázatot a saját adatbázisodhoz!</span>
         </div>
-        <button onclick="closeSettingsModal()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
-          ✕
+        <button onclick="openSettingsModal()" class="font-semibold underline shrink-0 hover:text-amber-700 dark:hover:text-amber-300">
+          Beállítás
         </button>
       </div>
 
-      <div class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-            Google Apps Script Web App URL
-          </label>
-          <input type="text" id="setting-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 focus:border-brand-500 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-mono text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500/20">
+      <!-- VIEW 1: PRACTICE PAGE -->
+      <section id="view-practice" class="w-full flex flex-col gap-4">
+        
+        <!-- Filter & Practice Setup Card -->
+        <div class="w-full p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 shadow-sm flex flex-col gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Theme Dropdown -->
+            <div class="flex flex-col gap-1">
+              <label class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Téma filter</label>
+              <select id="filter-category" onchange="onFilterChange()" class="w-full bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs sm:text-sm rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="ALL">Minden tema</option>
+              </select>
+            </div>
+            <!-- Practice Mode Dropdown -->
+            <div class="flex flex-col gap-1">
+              <label class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Gyakorlási mód</label>
+              <select id="filter-mode" onchange="onFilterChange()" class="w-full bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs sm:text-sm rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="smart">Okos sorsolás (súlyozott)</option>
+                <option value="weak">Hibajavító kör (gyenge mondatok)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Session Progress Mini Bar -->
+          <div class="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-700/40 text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <span id="session-count">0 válasz a munkamenetben</span>
+            <span id="session-accuracy" class="text-emerald-500">100% pontosság</span>
+          </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-            API Kulcs (titkos jelszó)
-          </label>
-          <input type="password" id="setting-key" placeholder="TitkosKulcs2026" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 focus:border-brand-500 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-mono text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500/20">
+        <!-- Main Sentence Practice Card -->
+        <div id="sentence-card" class="w-full p-4 sm:p-6 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 shadow-md flex flex-col gap-4 transition-all">
+          
+          <!-- Card Header Metadata -->
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2">
+              <span id="card-category" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                IGEIDŐK
+              </span>
+              <span id="card-id" class="text-xs font-mono font-medium text-slate-400">#M001</span>
+            </div>
+
+            <!-- Stats & Mastery Level -->
+            <div class="flex items-center gap-3">
+              <span id="card-stats" class="text-xs font-medium text-slate-400">Helyes: 0% (0/0)</span>
+              <!-- 5 Dots Mastery Indicator -->
+              <div id="card-dots" class="flex items-center gap-1" title="Elsajátítási szint (0-5)">
+                <div class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+                <div class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+                <div class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+                <div class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+                <div class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt Question -->
+          <div class="flex flex-col gap-1.5 my-1">
+            <span class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Fordítsd angolra:</span>
+            <h2 id="card-hu" class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug">
+              Már három éve itt dolgozom.
+            </h2>
+          </div>
+
+          <!-- User Input Area -->
+          <div class="flex flex-col gap-2">
+            <textarea id="user-input" rows="3" placeholder="Írd ide az angol fordítást..." class="w-full bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-xl p-3 text-sm sm:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none transition" onkeydown="handleKeyDown(event)"></textarea>
+            <div class="text-[11px] text-slate-400 flex justify-between items-center px-1">
+              <span>Nyomj <kbd class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 font-mono text-[10px]">Enter</kbd> a kiértékeléshez</span>
+              <span class="hidden sm:inline"><kbd class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 font-mono text-[10px]">Shift+Enter</kbd> új sor</span>
+            </div>
+          </div>
+
+          <!-- Check Action Button -->
+          <button id="btn-check" onclick="checkAnswer()" class="w-full py-3 px-4 rounded-xl font-bold text-sm sm:text-base bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/25 active:scale-[0.99] transition flex items-center justify-center gap-2">
+            <span>Ellenőrzés</span>
+            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          </button>
+
+          <!-- Feedback Container (Initially Hidden) -->
+          <div id="feedback-container" class="hidden flex-col gap-3 pt-2">
+            <!-- Dynamic feedback HTML gets injected here -->
+          </div>
+
+          <!-- Next Question Button (Initially Hidden) -->
+          <button id="btn-next" onclick="nextSentence()" class="hidden w-full py-3 px-4 rounded-xl font-bold text-sm sm:text-base bg-slate-800 hover:bg-slate-700 text-white dark:bg-slate-700 dark:hover:bg-slate-600 transition flex items-center justify-center gap-2">
+            <span>Következő mondat</span>
+            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          </button>
+
         </div>
 
-        <!-- Connection Test Feedback Box -->
-        <div id="settings-status-box" class="hidden p-3 rounded-xl text-xs font-medium"></div>
+      </section>
+
+      <!-- VIEW 2: STATISTICS & SENTENCE BROWSER -->
+      <section id="view-stats" class="hidden w-full flex-col gap-4">
+        
+        <!-- 4 KPI Summary Cards Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 w-full">
+          <div class="p-3 sm:p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 flex flex-col">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Összes mondat</span>
+            <span id="kpi-total" class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">0</span>
+          </div>
+          <div class="p-3 sm:p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 flex flex-col">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Megtanult (4-5★)</span>
+            <span id="kpi-mastered" class="text-xl sm:text-2xl font-black text-emerald-500 mt-1">0</span>
+          </div>
+          <div class="p-3 sm:p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 flex flex-col">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Pontosság</span>
+            <span id="kpi-accuracy" class="text-xl sm:text-2xl font-black text-blue-500 mt-1">0%</span>
+          </div>
+          <div class="p-3 sm:p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 flex flex-col">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Összes válasz</span>
+            <span id="kpi-answers" class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">0</span>
+          </div>
+        </div>
+
+        <!-- Category Progress Breakdown -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 flex flex-col gap-3">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Témakörök haladása</h3>
+          <div id="category-progress-list" class="flex flex-col gap-2.5">
+            <!-- Progress bars injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Sentence Browser / Table -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 flex flex-col gap-3">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Mondat adatbázis</h3>
+            
+            <div class="flex items-center gap-2">
+              <!-- Search -->
+              <input id="stats-search" type="text" placeholder="Keresés..." oninput="renderStatsTable()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 w-full sm:w-36">
+              
+              <!-- Sort -->
+              <select id="stats-sort" onchange="renderStatsTable()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 shrink-0">
+                <option value="errors">Legtöbb hiba</option>
+                <option value="level">Legkisebb szint</option>
+                <option value="id">ID sorrend</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Sentence List Items -->
+          <div id="stats-sentence-list" class="flex flex-col gap-2 max-h-96 overflow-y-auto pr-1">
+            <!-- Dynamic sentence list items -->
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full border-t border-slate-200 dark:border-slate-800/80 py-3 text-center text-xs text-slate-400">
+      <span>MondatMester PWA &bull; Biztonságos helyi adatkezelés</span>
+    </footer>
+
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settings-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-sm transition-opacity">
+    <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl p-5 flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2">
+          <i data-lucide="settings" class="w-5 h-5 text-blue-500"></i>
+          <h3 class="font-bold text-base text-slate-900 dark:text-white">Beállítások</h3>
+        </div>
+        <button onclick="closeSettingsModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
       </div>
 
-      <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-        <button onclick="testAndSaveSettings()" id="btn-save-settings" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow-md transition flex items-center justify-center gap-2">
+      <!-- Inputs Form -->
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-bold text-slate-400 uppercase">Google Apps Script Web App URL</label>
+          <input id="setting-url" type="url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-bold text-slate-400 uppercase">API Key (Jelszó)</label>
+          <input id="setting-key" type="password" placeholder="Titkos kulcsod..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col gap-2 pt-2">
+        <button onclick="saveSettings()" class="w-full py-2.5 px-4 rounded-xl font-semibold text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-md transition flex items-center justify-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
           <span>Kapcsolat tesztelése és mentés</span>
         </button>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-          <button onclick="copyQuickSetupLink()" class="w-full py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition text-center">
-            🔗 Gyorsbeállító link másolása
-          </button>
-          <button onclick="loadSampleDataOffline()" class="w-full py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 text-xs font-medium transition text-center">
-            🧪 Minta adatok (Offline)
-          </button>
-        </div>
+        <button onclick="copyQuickSetupLink()" class="w-full py-2.5 px-4 rounded-xl font-semibold text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition flex items-center justify-center gap-2">
+          <i data-lucide="copy" class="w-4 h-4"></i>
+          <span id="copy-link-text">Gyorsbeállító link másolása</span>
+        </button>
       </div>
 
     </div>
   </div>
 
-  <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
-  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-  <!-- ==================== APPLICATION LOGIC ==================== -->
+  <!-- APPLICATION LOGIC SCRIPT -->
   <script>
-    // ================= GLOBAL STATE =================
-    let sentences = [];
-    let currentSentence = null;
-    let currentSentenceIndex = -1;
-    let isAnswerSubmitted = false;
-
-    let sessionTotal = 0;
-    let sessionCorrect = 0;
-
-    const LOCAL_STORAGE_URL_KEY = 'mondatmester_url';
-    const LOCAL_STORAGE_API_KEY = 'mondatmester_key';
-
-    // Sample Offline Backup Data for instant preview
-    const SAMPLE_SENTENCES = [
+    // --- DEMO FALLBACK DATASET ---
+    const DEMO_SENTENCES = [
       {
         id: "M001",
-        hu: "Nem tudom, hol van a kulcsom.",
-        en: ["I don't know where my key is", "I have no idea where my key is"],
-        category: "Mindennapi",
-        note: "Függő kérdésben egyenes szórendet használunk (where my key is).",
-        stats: { attempts: 0, correct: 0, wrong: 0, level: 0, lastPracticed: "" }
+        hu: "Már három éve itt dolgozom.",
+        en: "I've been working here for three years. | I have been working here for 3 years.",
+        category: "IGEIDŐK",
+        tip: "Használj Present Perfect Continuous-t (have been working), mert a cselekvés a múltban kezdődött és a jelenben is tart.",
+        correct: 0,
+        total: 0,
+        level: 0
       },
       {
         id: "M002",
-        hu: "Már három éve itt dolgozom.",
-        en: ["I have been working here for three years", "I've worked here for three years"],
-        category: "Igeidők",
-        note: "Múltban kezdődött és jelenleg is tartó cselekvésnél Present Perfect folyamatos vagy egyszerű alak kell.",
-        stats: { attempts: 0, correct: 0, wrong: 0, level: 0, lastPracticed: "" }
+        hu: "Ha lett volna több időm, felhívtalak volna.",
+        en: "If I had had more time, I would have called you. | If I'd had more time, I'd have called you.",
+        category: "FELTÉTELES MÓD",
+        tip: "Harmadik típusú feltételes mondat (Third Conditional): If + Past Perfect, would + have + V3.",
+        correct: 0,
+        total: 0,
+        level: 0
       },
       {
         id: "M003",
-        hu: "Holnap nem érek rá, mert találkozóm van.",
-        en: ["I'm not free tomorrow because I have a meeting", "I am not available tomorrow as I have a meeting"],
-        category: "Munka",
-        note: "",
-        stats: { attempts: 0, correct: 0, wrong: 0, level: 0, lastPracticed: "" }
+        hu: "Meg tudnád mondani, hol van a legközelebbi buszmegálló?",
+        en: "Could you tell me where the nearest bus stop is? | Can you tell me where the nearest bus stop is?",
+        category: "KIFOGÁSTALAN KÉRÉSEK",
+        tip: "Közvetett kérdésnél a mellékmondat szórendje egyenes marad (where the nearest bus stop is).",
+        correct: 0,
+        total: 0,
+        level: 0
       }
     ];
 
-    // Contraction expansion map for bidirectional smart evaluation
+    // --- CONTRACTIONS EXPANSION DICTIONARY ---
     const CONTRACTIONS = {
-      "isn't": "is not", "aren't": "are not", "wasn't": "was not", "weren't": "were not",
-      "don't": "do not", "doesn't": "does not", "didn't": "did not",
-      "haven't": "have not", "hasn't": "has not", "hadn't": "had not",
-      "won't": "will not", "wouldn't": "would not",
-      "can't": "cannot", "couldn't": "could not", "shouldn't": "should not", "mustn't": "must not",
-      "let's": "let us", "i'm": "i am", "you're": "you are", "we're": "we are", "they're": "they are",
-      "i've": "i have", "you've": "you have", "we've": "we have", "they've": "they have",
-      "i'll": "i will", "you'll": "you will", "he'll": "he will", "she'll": "she will", "it'll": "it will", "we'll": "we will", "they'll": "they will",
-      "there's": "there is", "that's": "that is", "what's": "what is", "who's": "who is", "where's": "where is", "how's": "how is"
+      "isn't": "is not", "isnt": "is not",
+      "aren't": "are not", "arent": "are not",
+      "wasn't": "was not", "wasnt": "was not",
+      "weren't": "were not", "werent": "were not",
+      "don't": "do not", "dont": "do not",
+      "doesn't": "does not", "doesnt": "does not",
+      "didn't": "did not", "didnt": "did not",
+      "haven't": "have not", "havent": "have not",
+      "hasn't": "has not", "hasnt": "has not",
+      "hadn't": "had not", "hadnt": "had not",
+      "can't": "cannot", "cant": "cannot", "can not": "cannot",
+      "couldn't": "could not", "couldnt": "could not",
+      "shouldn't": "should not", "shouldnt": "should not",
+      "wouldn't": "would not", "wouldnt": "would not",
+      "won't": "will not", "wont": "will not",
+      "i'm": "i am", "im": "i am",
+      "you're": "you are", "youre": "you are",
+      "he's": "he is",
+      "she's": "she is",
+      "it's": "it is", "its": "it is",
+      "we're": "we are",
+      "they're": "they are", "theyre": "they are",
+      "i've": "i have", "ive": "i have",
+      "you've": "you have", "youve": "you have",
+      "we've": "we have", "weve": "we have",
+      "they've": "they have", "theyve": "they have",
+      "i'll": "i will", "ill": "i will",
+      "you'll": "you will", "youll": "you will",
+      "he'll": "he will",
+      "she'll": "she will",
+      "we'll": "we will",
+      "they'll": "they will",
+      "i'd": "i would",
+      "you'd": "you would",
+      "he'd": "he would",
+      "she'd": "she would",
+      "we'd": "we would",
+      "they'd": "they would",
+      "there's": "there is", "theres": "there is",
+      "that's": "that is", "thats": "that is",
+      "what's": "what is", "whats": "what is",
+      "let's": "let us", "lets": "let us"
     };
 
-    // Inverse map
-    const EXPANSIONS = {};
-    Object.keys(CONTRACTIONS).forEach(key => {
-      EXPANSIONS[CONTRACTIONS[key]] = key;
-    });
+    // --- APPLICATION STATE ---
+    let sentences = [];
+    let currentSentence = null;
+    let currentView = 'practice'; // 'practice' or 'stats'
+    let sessionTotal = 0;
+    let sessionCorrect = 0;
+    let isEvaluated = false;
+    let lastUserAnswer = '';
 
-    // ================= INITIALIZATION =================
+    // LocalStorage Keys
+    const LS_URL_KEY = 'mondatmester_api_url';
+    const LS_KEY_KEY = 'mondatmester_api_key';
+    const LS_THEME_KEY = 'mondatmester_theme';
+
+    // --- INITIALIZATION ---
     window.addEventListener('DOMContentLoaded', () => {
-      initDarkMode();
-      checkUrlQueryParams();
-      
-      const url = localStorage.getItem(LOCAL_STORAGE_URL_KEY);
-      const key = localStorage.getItem(LOCAL_STORAGE_API_KEY);
-
-      if (url && key) {
-        fetchDataFromBackend();
-      } else {
-        openSettingsModal();
-        updateSyncStatus('NOT_CONFIGURED', 'Nincs beállítva');
-      }
-
-      // Keypress listener for Enter key handling
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          const settingsOpen = !document.getElementById('modal-settings').classList.contains('hidden');
-          const isPracticeVisible = !document.getElementById('view-practice').classList.contains('hidden');
-
-          if (settingsOpen) {
-            e.preventDefault();
-            testAndSaveSettings();
-            return;
-          }
-
-          if (isPracticeVisible) {
-            const activeEl = document.activeElement;
-            if (activeEl.id === 'answer-input' || activeEl.id === 'btn-submit' || activeEl.id === 'btn-next') {
-              e.preventDefault();
-              if (!isAnswerSubmitted) {
-                submitAnswer();
-              } else {
-                nextSentence();
-              }
-            }
-          }
-        }
-      });
+      lucide.createIcons();
+      initTheme();
+      checkQueryParams();
+      loadSentences();
     });
 
-    // Read URL query params ?url=...&key=...
-    function checkUrlQueryParams() {
+    // --- THEME MANAGEMENT ---
+    function initTheme() {
+      const savedTheme = localStorage.getItem(LS_THEME_KEY) || 'dark';
+      setTheme(savedTheme);
+    }
+
+    function setTheme(theme) {
+      const html = document.documentElement;
+      const sun = document.getElementById('theme-icon-sun');
+      const moon = document.getElementById('theme-icon-moon');
+
+      if (theme === 'dark') {
+        html.classList.add('dark');
+        sun.classList.remove('hidden');
+        moon.classList.add('hidden');
+      } else {
+        html.classList.remove('dark');
+        sun.classList.add('hidden');
+        moon.classList.remove('hidden');
+      }
+      localStorage.setItem(LS_THEME_KEY, theme);
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      setTheme(isDark ? 'light' : 'dark');
+    }
+
+    // --- 1-CLICK QUICK SETUP PARAMS ---
+    function checkQueryParams() {
       const params = new URLSearchParams(window.location.search);
       const urlParam = params.get('url');
       const keyParam = params.get('key');
 
       if (urlParam && keyParam) {
-        localStorage.setItem(LOCAL_STORAGE_URL_KEY, urlParam);
-        localStorage.setItem(LOCAL_STORAGE_API_KEY, keyParam);
-        showToast('Beállítások sikeresen betöltve az URL-ből!', 'success');
-        
-        // Clean URL without reloading page
+        localStorage.setItem(LS_URL_KEY, urlParam);
+        localStorage.setItem(LS_KEY_KEY, keyParam);
+        // Clean URL without reloading
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
 
-    // ================= DARK MODE =================
-    function initDarkMode() {
-      const saved = localStorage.getItem('mondatmester_theme');
-      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    }
+    // --- BACKEND API SYNC ---
+    async function loadSentences() {
+      const apiUrl = localStorage.getItem(LS_URL_KEY);
+      const apiKey = localStorage.getItem(LS_KEY_KEY);
 
-    function toggleDarkMode() {
-      const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('mondatmester_theme', isDark ? 'dark' : 'light');
-    }
+      updateSyncStatus('syncing', 'Szinkronizálás...');
 
-    // ================= TAB NAVIGATION =================
-    function switchTab(tab) {
-      const practiceTab = document.getElementById('tab-practice');
-      const statsTab = document.getElementById('tab-stats');
-      const practiceView = document.getElementById('view-practice');
-      const statsView = document.getElementById('view-stats');
-
-      if (tab === 'practice') {
-        practiceTab.className = 'px-3 sm:px-4 py-1.5 rounded-lg font-medium shadow-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition';
-        statsTab.className = 'px-3 sm:px-4 py-1.5 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition';
-        practiceView.classList.remove('hidden');
-        statsView.classList.add('hidden');
-        focusAnswerInput();
-      } else {
-        statsTab.className = 'px-3 sm:px-4 py-1.5 rounded-lg font-medium shadow-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition';
-        practiceTab.className = 'px-3 sm:px-4 py-1.5 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition';
-        statsView.classList.remove('hidden');
-        practiceView.classList.add('hidden');
-        renderStatisticsView();
-      }
-    }
-
-    // ================= BACKEND API COMMUNICATIONS =================
-    function updateSyncStatus(state, message) {
-      const badge = document.getElementById('sync-status');
-      const text = document.getElementById('sync-status-text');
-      const icon = document.getElementById('sync-icon');
-
-      badge.classList.remove('hidden');
-
-      if (state === 'LOADING') {
-        badge.className = 'hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
-        text.innerText = message || 'Betöltés...';
-        icon.classList.add('animate-spin');
-      } else if (state === 'SYNCED') {
-        badge.className = 'hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
-        text.innerText = message || 'Szinkronizálva';
-        icon.classList.remove('animate-spin');
-      } else if (state === 'SAVING') {
-        badge.className = 'hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800';
-        text.innerText = message || 'Mentés...';
-        icon.classList.add('animate-spin');
-      } else if (state === 'ERROR') {
-        badge.className = 'hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800';
-        text.innerText = message || 'Szinkron hiba';
-        icon.classList.remove('animate-spin');
-      } else {
-        badge.className = 'hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700';
-        text.innerText = message || 'Nincs beállítva';
-        icon.classList.remove('animate-spin');
-      }
-    }
-
-    async function fetchDataFromBackend(showToastNotice = false) {
-      const url = localStorage.getItem(LOCAL_STORAGE_URL_KEY);
-      const key = localStorage.getItem(LOCAL_STORAGE_API_KEY);
-
-      if (!url || !key) {
-        updateSyncStatus('NOT_CONFIGURED', 'Nincs beállítva');
+      if (!apiUrl || !apiKey) {
+        sentences = JSON.parse(JSON.stringify(DEMO_SENTENCES));
+        updateSyncStatus('demo', 'Demo mód');
+        document.getElementById('demo-banner').classList.remove('hidden');
+        populateCategories();
+        pickNextSentence();
+        renderStatsTable();
         return;
       }
 
-      updateSyncStatus('LOADING', 'Adatok letöltése...');
+      document.getElementById('demo-banner').classList.add('hidden');
 
       try {
-        const fullUrl = `${url}?key=${encodeURIComponent(key)}`;
-        const response = await fetch(fullUrl, { method: 'GET', redirect: 'follow' });
-        const json = await response.json();
-
-        if (json.status === 'ok') {
-          sentences = json.sentences || [];
-          populateCategoryDropdown();
-          updateSyncStatus('SYNCED', 'Szinkronizálva');
-          if (showToastNotice) showToast(`${sentences.length} mondat sikeresen betöltve!`, 'success');
-          nextSentence();
-        } else {
-          updateSyncStatus('ERROR', 'API Hiba');
-          showToast(`Hiba: ${json.message}`, 'error');
+        const fullUrl = `${apiUrl}?key=${encodeURIComponent(apiKey)}`;
+        const response = await fetch(fullUrl);
+        
+        if (!response.ok) throw new Error(`HTTP hiba: ${response.status}`);
+        
+        const data = await response.json();
+        
+        if (data.status === 'error') {
+          throw new Error(data.message || 'API Hiba');
         }
+
+        sentences = data.sentences || [];
+        updateSyncStatus('synced', 'Összekapcsolva');
+        populateCategories();
+        pickNextSentence();
+        renderStatsTable();
       } catch (err) {
-        console.error("GET Error:", err);
-        updateSyncStatus('ERROR', 'Csatlakozási hiba');
-        showToast('Nem sikerült csatlakozni a Google Apps Script végponthoz.', 'error');
+        console.error("Backend fetch error:", err);
+        updateSyncStatus('offline', 'Kapcsolódási hiba');
+        if (sentences.length === 0) {
+          sentences = JSON.parse(JSON.stringify(DEMO_SENTENCES));
+        }
+        populateCategories();
+        pickNextSentence();
+        renderStatsTable();
       }
     }
 
-    async function sendPostToBackend(payload) {
-      const url = localStorage.getItem(LOCAL_STORAGE_URL_KEY);
-      const key = localStorage.getItem(LOCAL_STORAGE_API_KEY);
+    function syncData() {
+      const syncIcon = document.getElementById('sync-icon');
+      syncIcon.classList.add('animate-spin');
+      loadSentences().finally(() => {
+        setTimeout(() => syncIcon.classList.remove('animate-spin'), 600);
+      });
+    }
 
-      if (!url || !key) return;
+    function updateSyncStatus(type, text) {
+      const dot = document.getElementById('sync-status-dot');
+      const label = document.getElementById('sync-status-text');
 
-      updateSyncStatus('SAVING', 'Mentés...');
+      label.textContent = text;
+      dot.className = 'w-2 h-2 rounded-full ';
+
+      if (type === 'synced') dot.classList.add('bg-emerald-500');
+      else if (type === 'syncing') dot.classList.add('bg-blue-500', 'animate-pulse');
+      else if (type === 'offline') dot.classList.add('bg-rose-500');
+      else dot.classList.add('bg-amber-500'); // demo
+    }
+
+    async function sendPostAction(payload) {
+      const apiUrl = localStorage.getItem(LS_URL_KEY);
+      const apiKey = localStorage.getItem(LS_KEY_KEY);
+      if (!apiUrl || !apiKey) return;
 
       try {
-        payload.key = key;
-        const response = await fetch(url, {
+        await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload),
-          redirect: 'follow'
+          body: JSON.stringify({ key: apiKey, ...payload })
         });
-
-        const resJson = await response.json();
-        if (resJson.status === 'ok') {
-          updateSyncStatus('SYNCED', 'Szinkronizálva');
-        } else {
-          updateSyncStatus('ERROR', 'Mentési hiba');
-          console.error("POST Error Response:", resJson);
-        }
-      } catch (err) {
-        console.error("POST Exception:", err);
-        updateSyncStatus('ERROR', 'Mentési hiba');
+      } catch (e) {
+        console.warn('POST sync failed:', e);
       }
     }
 
-    // ================= PRACTICE ENGINE & LOGIC =================
-    function populateCategoryDropdown() {
+    // --- NAVIGATION TABS ---
+    function switchTab(tab) {
+      currentView = tab;
+      const practiceView = document.getElementById('view-practice');
+      const statsView = document.getElementById('view-stats');
+      
+      const deskPrac = document.getElementById('nav-practice-desk');
+      const deskStat = document.getElementById('nav-stats-desk');
+      const mobPrac = document.getElementById('nav-practice-mob');
+      const mobStat = document.getElementById('nav-stats-mob');
+
+      const activeClasses = ['bg-blue-600', 'text-white', 'shadow-sm'];
+      const inactiveClasses = ['text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-white'];
+
+      if (tab === 'practice') {
+        practiceView.classList.remove('hidden');
+        statsView.classList.add('hidden');
+
+        deskPrac.classList.add(...activeClasses);
+        deskPrac.classList.remove(...inactiveClasses);
+        deskStat.classList.remove(...activeClasses);
+        deskStat.classList.add(...inactiveClasses);
+
+        mobPrac.classList.add(...activeClasses);
+        mobPrac.classList.remove(...inactiveClasses);
+        mobStat.classList.remove(...activeClasses);
+        mobStat.classList.add(...inactiveClasses);
+      } else {
+        practiceView.classList.add('hidden');
+        statsView.classList.remove('hidden');
+
+        deskStat.classList.add(...activeClasses);
+        deskStat.classList.remove(...inactiveClasses);
+        deskPrac.classList.remove(...activeClasses);
+        deskPrac.classList.add(...inactiveClasses);
+
+        mobStat.classList.add(...activeClasses);
+        mobStat.classList.remove(...inactiveClasses);
+        mobPrac.classList.remove(...activeClasses);
+        mobPrac.classList.add(...inactiveClasses);
+
+        renderStatsTable();
+      }
+    }
+
+    // --- CATEGORY POPULATION & SELECTION ---
+    function populateCategories() {
       const select = document.getElementById('filter-category');
       const currentVal = select.value;
-
-      // Extract unique categories
-      const categories = Array.from(new Set(sentences.map(s => s.category || 'Általános'))).sort();
+      const categories = Array.from(new Set(sentences.map(s => s.category || 'ÁLTALÁNOS')));
 
       select.innerHTML = '<option value="ALL">Minden téma</option>';
       categories.forEach(cat => {
@@ -679,623 +661,428 @@
       }
     }
 
-    function onCategoryChange() {
-      nextSentence();
+    function onFilterChange() {
+      pickNextSentence();
     }
 
-    function onModeChange() {
-      nextSentence();
-    }
+    // --- SMART SENTENCE PICKING LOGIC ---
+    function pickNextSentence() {
+      if (sentences.length === 0) return;
 
-    function getFilteredSentences() {
       const catFilter = document.getElementById('filter-category').value;
       const modeFilter = document.getElementById('filter-mode').value;
 
-      return sentences.filter(s => {
-        // Category filter
-        if (catFilter !== 'ALL' && (s.category || 'Általános') !== catFilter) {
-          return false;
-        }
-        // Mode filter: ERROR_ONLY requires wrong > 0 or level <= 2
-        if (modeFilter === 'ERROR_ONLY') {
-          const stats = s.stats || { wrong: 0, level: 0 };
-          return stats.wrong > 0 || stats.level <= 2;
-        }
-        return true;
-      });
-    }
+      let pool = sentences;
+      if (catFilter !== 'ALL') {
+        pool = pool.filter(s => s.category === catFilter);
+      }
 
-    // Smart Weighted Random Selection algorithm
-    function pickNextSentence() {
-      const pool = getFilteredSentences();
-      if (pool.length === 0) return null;
-      if (pool.length === 1) return pool[0];
+      if (pool.length === 0) pool = sentences;
 
-      // Calculate weights for each sentence in the pool
-      const weights = pool.map(s => {
-        const stats = s.stats || { level: 0, wrong: 0, attempts: 0 };
-        // Priority weight formula:
-        // Lower level gives higher weight (5 - level + 1)
-        // High errors give extra weight
-        // Unseen sentences (attempts == 0) get an initial boost
-        let w = (6 - (stats.level || 0)) * 2;
-        w += (stats.wrong || 0) * 3;
-        if ((stats.attempts || 0) === 0) w += 5;
-        return Math.max(1, w);
-      });
+      if (modeFilter === 'weak') {
+        const weakPool = pool.filter(s => (s.level || 0) < 3 || ((s.total || 0) > 0 && (s.correct || 0) / s.total < 0.6));
+        if (weakPool.length > 0) pool = weakPool;
+      }
 
+      // Weighted random selection (lower level = higher weight)
+      const weights = pool.map(s => Math.max(1, 6 - (s.level || 0)));
       const totalWeight = weights.reduce((a, b) => a + b, 0);
       let rand = Math.random() * totalWeight;
 
+      let selected = pool[0];
       for (let i = 0; i < pool.length; i++) {
-        if (rand < weights[i]) {
-          // Avoid showing exact same sentence twice in a row if pool > 1
-          if (currentSentence && pool[i].id === currentSentence.id && pool.length > 1) {
-            continue;
-          }
-          return pool[i];
-        }
         rand -= weights[i];
+        if (rand <= 0) {
+          selected = pool[i];
+          break;
+        }
       }
 
-      return pool[0];
+      currentSentence = selected;
+      renderCurrentSentence();
+    }
+
+    function renderCurrentSentence() {
+      if (!currentSentence) return;
+
+      isEvaluated = false;
+      document.getElementById('card-category').textContent = (currentSentence.category || 'ÁLTALÁNOS').toUpperCase();
+      document.getElementById('card-id').textContent = `#${currentSentence.id}`;
+      document.getElementById('card-hu').textContent = currentSentence.hu;
+
+      // Stats
+      const corr = currentSentence.correct || 0;
+      const tot = currentSentence.total || 0;
+      const pct = tot > 0 ? Math.round((corr / tot) * 100) : 0;
+      document.getElementById('card-stats').textContent = `Helyes: ${pct}% (${corr}/${tot})`;
+
+      // 5 Dots level
+      const lvl = Math.min(5, Math.max(0, currentSentence.level || 0));
+      const dotsContainer = document.getElementById('card-dots');
+      dotsContainer.innerHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        const dot = document.createElement('div');
+        dot.className = `w-2 h-2 rounded-full ${i <= lvl ? 'bg-emerald-500 shadow-sm shadow-emerald-500/50' : 'bg-slate-300 dark:bg-slate-700'}`;
+        dotsContainer.appendChild(dot);
+      }
+
+      // Input Reset
+      const textarea = document.getElementById('user-input');
+      textarea.value = '';
+      textarea.disabled = false;
+      textarea.focus();
+
+      // Buttons & Feedback Reset
+      document.getElementById('btn-check').classList.remove('hidden');
+      document.getElementById('btn-next').classList.add('hidden');
+      const feedback = document.getElementById('feedback-container');
+      feedback.classList.add('hidden');
+      feedback.innerHTML = '';
+    }
+
+    function handleKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!isEvaluated) {
+          checkAnswer();
+        } else {
+          nextSentence();
+        }
+      }
+    }
+
+    // --- CONTRACTION & STRING NORMALIZATION ---
+    function normalizeText(text) {
+      if (!text) return '';
+      let str = text.toLowerCase()
+        .replace(/[\u2018\u2019]/g, "'") // Normalize smart apostrophes
+        .replace(/[.?!,;:]/g, '')        // Strip punctuation
+        .trim();
+
+      // Replace contractions with canonical expanded form
+      const words = str.split(/\s+/);
+      const expandedWords = words.map(w => CONTRACTIONS[w] || w);
+      return expandedWords.join(' ').replace(/\s+/g, ' ');
+    }
+
+    // Split accepted translations string by '|'
+    function getAcceptedList(enString) {
+      return enString.split('|').map(s => s.trim()).filter(Boolean);
+    }
+
+    // --- SMART EVALUATION ---
+    function checkAnswer() {
+      if (!currentSentence || isEvaluated) return;
+
+      const inputElem = document.getElementById('user-input');
+      const userRaw = inputElem.value.trim();
+      if (!userRaw) return;
+
+      lastUserAnswer = userRaw;
+      isEvaluated = true;
+      inputElem.disabled = true;
+
+      const userNormalized = normalizeText(userRaw);
+      const acceptedList = getAcceptedList(currentSentence.en);
+      
+      const isCorrect = acceptedList.some(acc => normalizeText(acc) === userNormalized);
+
+      // Session & Sentence Stats Update
+      sessionTotal++;
+      currentSentence.total = (currentSentence.total || 0) + 1;
+
+      if (isCorrect) {
+        sessionCorrect++;
+        currentSentence.correct = (currentSentence.correct || 0) + 1;
+        currentSentence.level = Math.min(5, (currentSentence.level || 0) + 1);
+      } else {
+        currentSentence.level = Math.max(0, (currentSentence.level || 0) - 1);
+      }
+
+      // Update UI Session Bar
+      const sessPct = Math.round((sessionCorrect / sessionTotal) * 100);
+      document.getElementById('session-count').textContent = `${sessionTotal} válasz a munkamenetben`;
+      document.getElementById('session-accuracy').textContent = `${sessPct}% pontosság`;
+
+      // Render Feedback
+      renderFeedback(isCorrect, acceptedList, userRaw);
+
+      // Backend Sync
+      sendPostAction({
+        action: 'updateStat',
+        id: currentSentence.id,
+        isCorrect: isCorrect
+      });
+
+      // Toggle Action Buttons
+      document.getElementById('btn-check').classList.add('hidden');
+      document.getElementById('btn-next').classList.remove('hidden');
+    }
+
+    // --- WORD DIFF GENERATOR FOR WRONG ANSWERS ---
+    function generateWordDiff(userRaw, closestAccepted) {
+      const userWords = userRaw.split(/\s+/);
+      const targetWords = closestAccepted.split(/\s+/);
+
+      // Simple visual word diff
+      let html = '<div class="flex flex-wrap gap-1.5 text-sm sm:text-base font-medium leading-relaxed">';
+      
+      userWords.forEach((word) => {
+        const cleanWord = normalizeText(word);
+        const matchesTarget = targetWords.some(tw => normalizeText(tw) === cleanWord);
+        if (matchesTarget) {
+          html += `<span class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200">${escapeHtml(word)}</span>`;
+        } else {
+          html += `<span class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-600 dark:text-rose-400 line-through">${escapeHtml(word)}</span>`;
+        }
+      });
+
+      html += '</div>';
+      return html;
+    }
+
+    function renderFeedback(isCorrect, acceptedList, userRaw) {
+      const container = document.getElementById('feedback-container');
+      container.classList.remove('hidden');
+
+      if (isCorrect) {
+        let altHtml = '';
+        if (acceptedList.length > 1) {
+          altHtml = `
+            <div class="mt-2 pt-2 border-t border-emerald-500/20 text-xs text-emerald-700 dark:text-emerald-300">
+              <span class="font-bold">Így is mondhattad volna:</span>
+              <ul class="list-disc list-inside mt-1 space-y-0.5">
+                ${acceptedList.slice(1).map(alt => `<li>${escapeHtml(alt)}</li>`).join('')}
+              </ul>
+            </div>
+          `;
+        }
+
+        container.innerHTML = `
+          <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 flex flex-col gap-2">
+            <div class="flex items-center gap-2 font-bold text-base">
+              <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
+              <span>Kiváló! Helyes megoldás.</span>
+            </div>
+            ${altHtml}
+            ${currentSentence.tip ? `<div class="text-xs bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20 mt-1">💡 <strong>Tipp:</strong> ${escapeHtml(currentSentence.tip)}</div>` : ''}
+          </div>
+        `;
+      } else {
+        const closestTarget = acceptedList[0];
+        const wordDiffHtml = generateWordDiff(userRaw, closestTarget);
+
+        container.innerHTML = `
+          <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 flex flex-col gap-3">
+            <div class="flex items-center gap-2 font-bold text-base">
+              <i data-lucide="x-circle" class="w-5 h-5 shrink-0"></i>
+              <span>Nem teljesen pontos...</span>
+            </div>
+
+            <!-- Visual Diff -->
+            <div class="flex flex-col gap-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">A te válaszod elemzése:</span>
+              ${wordDiffHtml}
+            </div>
+
+            <!-- Expected Correct Translation -->
+            <div class="flex flex-col gap-1 mt-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-500">Helyes fordítás(ok):</span>
+              <div class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">
+                ${acceptedList.map(a => `<div>• ${escapeHtml(a)}</div>`).join('')}
+              </div>
+            </div>
+
+            ${currentSentence.tip ? `<div class="text-xs bg-rose-500/10 p-2.5 rounded-lg border border-rose-500/20 text-slate-700 dark:text-slate-300">💡 <strong>Tipp:</strong> ${escapeHtml(currentSentence.tip)}</div>` : ''}
+
+            <!-- Overrides Action Buttons -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-2 border-t border-rose-500/20">
+              <button onclick="overrideMarkCorrect()" class="py-2 px-3 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center justify-center gap-1.5">
+                <i data-lucide="check" class="w-4 h-4"></i>
+                <span>✓ Mégis jó volt</span>
+              </button>
+              <button onclick="overrideAddAlternative()" class="py-2 px-3 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition flex items-center justify-center gap-1.5">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>+ Hozzáadás elfogadottként</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }
+      lucide.createIcons();
+    }
+
+    function overrideMarkCorrect() {
+      if (!currentSentence) return;
+      
+      // Revert stats
+      currentSentence.correct = (currentSentence.correct || 0) + 1;
+      currentSentence.level = Math.min(5, (currentSentence.level || 0) + 2); // compensate subtraction
+      sessionCorrect++;
+
+      // Update feedback display to success state
+      renderFeedback(true, getAcceptedList(currentSentence.en), lastUserAnswer);
+
+      // Backend sync override
+      sendPostAction({
+        action: 'updateStat',
+        id: currentSentence.id,
+        isCorrect: true
+      });
+    }
+
+    function overrideAddAlternative() {
+      if (!currentSentence || !lastUserAnswer) return;
+
+      const currentAcc = getAcceptedList(currentSentence.en);
+      if (!currentAcc.includes(lastUserAnswer)) {
+        currentSentence.en += ` | ${lastUserAnswer}`;
+      }
+
+      // Mark correct as well
+      overrideMarkCorrect();
+
+      // Backend sync new alternative
+      sendPostAction({
+        action: 'addAlternative',
+        id: currentSentence.id,
+        newAlternative: lastUserAnswer
+      });
     }
 
     function nextSentence() {
-      if (sentences.length === 0) {
-        document.getElementById('card-hu-text').innerText = "Nincsenek elérhető mondatok. Ellenőrizd a beállításokat!";
-        return;
-      }
-
-      const next = pickNextSentence();
-      if (!next) {
-        document.getElementById('card-hu-text').innerText = "Nincs a szűrésnek megfelelő mondat a hibajavító körben!";
-        document.getElementById('card-id').innerText = "";
-        document.getElementById('card-category').innerText = "Információ";
-        document.getElementById('answer-input').disabled = true;
-        document.getElementById('btn-submit').disabled = true;
-        return;
-      }
-
-      document.getElementById('answer-input').disabled = false;
-      document.getElementById('btn-submit').disabled = false;
-
-      currentSentence = next;
-      isAnswerSubmitted = false;
-
-      // Render Sentence Card Data
-      document.getElementById('card-category').innerText = currentSentence.category || 'Általános';
-      document.getElementById('card-id').innerText = `#${currentSentence.id}`;
-      document.getElementById('card-hu-text').innerText = currentSentence.hu;
-
-      // Reset Answer Input & Feedback
-      document.getElementById('answer-input').value = '';
-      document.getElementById('feedback-panel').classList.add('hidden');
-      document.getElementById('btn-submit').classList.remove('hidden');
-
-      // Mastery Level Dots & Stats
-      renderLevelDots(currentSentence.stats ? currentSentence.stats.level : 0);
-      
-      const st = currentSentence.stats || { attempts: 0, correct: 0 };
-      const acc = st.attempts > 0 ? Math.round((st.correct / st.attempts) * 100) : 0;
-      document.getElementById('card-history-accuracy').innerText = `Helyes: ${acc}% (${st.correct}/${st.attempts})`;
-
-      focusAnswerInput();
+      pickNextSentence();
     }
 
-    function renderLevelDots(level) {
-      const container = document.getElementById('card-level-dots');
-      container.innerHTML = '';
-      const clampedLevel = Math.min(5, Math.max(0, level || 0));
-
-      for (let i = 1; i <= 5; i++) {
-        const dot = document.createElement('span');
-        if (i <= clampedLevel) {
-          dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50';
-        } else {
-          dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-200 dark:bg-slate-700';
-        }
-        container.appendChild(dot);
-      }
-    }
-
-    function focusAnswerInput() {
-      setTimeout(() => {
-        const input = document.getElementById('answer-input');
-        if (input && !input.disabled) {
-          input.focus();
-        }
-      }, 50);
-    }
-
-    // ================= SMART EVALUATION ENGINE =================
-    function cleanPunctuation(str) {
-      return str
-        .toLowerCase()
-        .replace(/[’`´]/g, "'")
-        .replace(/[.,?!;:"]/g, "")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
-
-    // Generates all possible expanded/contracted forms of a given string
-    function generateCanonicalVariants(text) {
-      const cleaned = cleanPunctuation(text);
-      const variants = new Set([cleaned]);
-
-      // Expand contractions
-      let expanded = cleaned;
-      Object.keys(CONTRACTIONS).forEach(contracted => {
-        const regex = new RegExp(`\\b${contracted}\\b`, 'gi');
-        if (regex.test(expanded)) {
-          expanded = expanded.replace(regex, CONTRACTIONS[contracted]);
-          variants.add(expanded);
-        }
-      });
-
-      // Contract expansions
-      let contracted = cleaned;
-      Object.keys(EXPANSIONS).forEach(full => {
-        const regex = new RegExp(`\\b${full}\\b`, 'gi');
-        if (regex.test(contracted)) {
-          contracted = contracted.replace(regex, EXPANSIONS[full]);
-          variants.add(contracted);
-        }
-      });
-
-      return Array.from(variants);
-    }
-
-    function isAnswerCorrect(userInput, acceptedList) {
-      const userVariants = generateCanonicalVariants(userInput);
-      
-      for (const target of acceptedList) {
-        const targetVariants = generateCanonicalVariants(target);
-        for (const uVar of userVariants) {
-          if (targetVariants.includes(uVar)) {
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-
-    // Word-Level Diff Algorithm for Incorrect Answers
-    function computeWordDiff(userInput, targetText) {
-      const userWords = cleanPunctuation(userInput).split(" ").filter(Boolean);
-      const targetWords = cleanPunctuation(targetText).split(" ").filter(Boolean);
-
-      const diffResult = [];
-      let i = 0, j = 0;
-
-      while (i < userWords.length || j < targetWords.length) {
-        if (i < userWords.length && j < targetWords.length && userWords[i] === targetWords[j]) {
-          diffResult.push({ word: targetWords[j], status: 'correct' });
-          i++; j++;
-        } else if (j < targetWords.length && (!userWords[i] || targetWords.includes(userWords[i], j + 1))) {
-          diffResult.push({ word: targetWords[j], status: 'missing' });
-          j++;
-        } else if (i < userWords.length) {
-          diffResult.push({ word: userWords[i], status: 'extra' });
-          i++;
-        }
-      }
-
-      return diffResult;
-    }
-
-    // Find the closest target variant for diff rendering
-    function getClosestTarget(userInput, acceptedList) {
-      const cleanedUser = cleanPunctuation(userInput);
-      let bestMatch = acceptedList[0];
-      let minDistance = 999;
-
-      acceptedList.forEach(target => {
-        const cleanedTarget = cleanPunctuation(target);
-        const dist = levenshteinDistance(cleanedUser, cleanedTarget);
-        if (dist < minDistance) {
-          minDistance = dist;
-          bestMatch = target;
-        }
-      });
-
-      return bestMatch;
-    }
-
-    function levenshteinDistance(a, b) {
-      const matrix = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
-      for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
-      for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
-
-      for (let i = 1; i <= a.length; i++) {
-        for (let j = 1; j <= b.length; j++) {
-          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j] + 1,
-            matrix[i][j - 1] + 1,
-            matrix[i - 1][j - 1] + cost
-          );
-        }
-      }
-      return matrix[a.length][b.length];
-    }
-
-    // ================= SUBMIT ANSWER =================
-    function submitAnswer() {
-      if (!currentSentence || isAnswerSubmitted) return;
-
-      const userInput = document.getElementById('answer-input').value.trim();
-      if (!userInput) {
-        showToast('Kérlek írd be a fordítást!', 'error');
-        return;
-      }
-
-      isAnswerSubmitted = true;
-      document.getElementById('btn-submit').classList.add('hidden');
-
-      const acceptedList = currentSentence.en || [];
-      const correct = isAnswerCorrect(userInput, acceptedList);
-
-      // Session counters
-      sessionTotal++;
-      if (correct) sessionCorrect++;
-      updateSessionCounterUI();
-
-      // Ensure stats object exists
-      if (!currentSentence.stats) {
-        currentSentence.stats = { attempts: 0, correct: 0, wrong: 0, level: 0, lastPracticed: "" };
-      }
-
-      const st = currentSentence.stats;
-      st.attempts = (st.attempts || 0) + 1;
-
-      if (correct) {
-        st.correct = (st.correct || 0) + 1;
-        st.level = Math.min(5, (st.level || 0) + 1);
-      } else {
-        st.wrong = (st.wrong || 0) + 1;
-        st.level = Math.max(0, (st.level || 0) - 1);
-      }
-
-      renderLevelDots(st.level);
-
-      // Fire async backend update
-      sendPostToBackend({
-        action: 'updateStat',
-        id: currentSentence.id,
-        stats: st
-      });
-
-      // Render Feedback UI
-      renderFeedbackUI(correct, userInput);
-    }
-
-    function updateSessionCounterUI() {
-      const pct = sessionTotal > 0 ? Math.round((sessionCorrect / sessionTotal) * 100) : 100;
-      document.getElementById('session-count').innerText = `${sessionTotal} válasz`;
-      document.getElementById('session-accuracy').innerText = `${pct}% pontosság`;
-    }
-
-    function renderFeedbackUI(isCorrect, userInput) {
-      const panel = document.getElementById('feedback-panel');
-      const badgeIcon = document.getElementById('feedback-badge-icon');
-      const title = document.getElementById('feedback-title');
-      const diffContainer = document.getElementById('feedback-diff-container');
-      const diffContent = document.getElementById('feedback-diff-content');
-      const variantsList = document.getElementById('feedback-variants-list');
-      const variantsLabel = document.getElementById('feedback-variants-label');
-      const noteContainer = document.getElementById('feedback-note-container');
-      const noteText = document.getElementById('feedback-note-text');
-
-      const btnOverride = document.getElementById('btn-override-correct');
-      const btnAddAlt = document.getElementById('btn-add-alternative');
-
-      panel.classList.remove('hidden');
-
-      if (isCorrect) {
-        panel.className = 'rounded-2xl p-5 border bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 space-y-4 transition-all';
-        badgeIcon.className = 'w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-emerald-500/30';
-        badgeIcon.innerText = '✓';
-        title.className = 'font-bold text-lg text-emerald-900 dark:text-emerald-200';
-        title.innerText = 'Helyes válasz!';
-
-        diffContainer.classList.add('hidden');
-        btnOverride.classList.add('hidden');
-        btnAddAlt.classList.add('hidden');
-      } else {
-        panel.className = 'rounded-2xl p-5 border bg-rose-50/80 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800 space-y-4 transition-all';
-        badgeIcon.className = 'w-7 h-7 rounded-full bg-rose-500 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-rose-500/30';
-        badgeIcon.innerText = '✕';
-        title.className = 'font-bold text-lg text-rose-900 dark:text-rose-200';
-        title.innerText = 'Sajnos hibás válasz!';
-
-        // Compute and show Word Diff
-        const closestTarget = getClosestTarget(userInput, currentSentence.en);
-        const diffTokens = computeWordDiff(userInput, closestTarget);
-
-        diffContent.innerHTML = '';
-        diffTokens.forEach(t => {
-          const span = document.createElement('span');
-          if (t.status === 'correct') {
-            span.className = 'text-slate-800 dark:text-slate-200 px-1 py-0.5';
-            span.innerText = t.word;
-          } else if (t.status === 'extra') {
-            span.className = 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 line-through px-1.5 py-0.5 rounded font-medium';
-            span.innerText = t.word;
-          } else if (t.status === 'missing') {
-            span.className = 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-semibold px-1.5 py-0.5 rounded';
-            span.innerText = t.word;
-          }
-          diffContent.appendChild(span);
-        });
-
-        diffContainer.classList.remove('hidden');
-        btnOverride.classList.remove('hidden');
-        btnAddAlt.classList.remove('hidden');
-      }
-
-      // Populate English Accepted Variants
-      variantsList.innerHTML = '';
-      currentSentence.en.forEach(variant => {
-        const li = document.createElement('li');
-        li.innerText = variant;
-        variantsList.appendChild(li);
-      });
-      variantsLabel.innerText = currentSentence.en.length > 1 ? 'Elfogadott angol verziók:' : 'Helyes angol fordítás:';
-
-      // Grammar Note
-      if (currentSentence.note && currentSentence.note.trim()) {
-        noteText.innerText = currentSentence.note;
-        noteContainer.classList.remove('hidden');
-      } else {
-        noteContainer.classList.add('hidden');
-      }
-    }
-
-    // ================= OVERRIDE & ADD ALTERNATIVE =================
-    function overrideAsCorrect() {
-      if (!currentSentence || !currentSentence.stats) return;
-
-      const st = currentSentence.stats;
-      // Revert previous wrong count and credit correct
-      st.wrong = Math.max(0, (st.wrong || 1) - 1);
-      st.correct = (st.correct || 0) + 1;
-      st.level = Math.min(5, (st.level || 0) + 2); // boost level back up
-
-      // Update Session stats
-      sessionCorrect++;
-      updateSessionCounterUI();
-      renderLevelDots(st.level);
-
-      // Send updateStat to Backend API
-      sendPostToBackend({
-        action: 'updateStat',
-        id: currentSentence.id,
-        stats: st
-      });
-
-      // Update Feedback UI to green
-      const userInput = document.getElementById('answer-input').value.trim();
-      renderFeedbackUI(true, userInput);
-      showToast('Jelölve helyesként!', 'success');
-    }
-
-    function addCurrentAsAlternative() {
-      if (!currentSentence) return;
-
-      const newAlt = document.getElementById('answer-input').value.trim();
-      if (!newAlt) return;
-
-      // Add to local array if not already present
-      const exists = currentSentence.en.some(item => item.toLowerCase() === newAlt.toLowerCase());
-      if (!exists) {
-        currentSentence.en.push(newAlt);
-      }
-
-      // Mark as correct locally & adjust stats
-      overrideAsCorrect();
-
-      // Send addAlternative to Backend API
-      sendPostToBackend({
-        action: 'addAlternative',
-        id: currentSentence.id,
-        newAlternative: newAlt
-      });
-
-      showToast('Új válasz hozzáadva a táblázathoz!', 'success');
-    }
-
-    // ================= STATISTICS VIEW RENDERING =================
-    function renderStatisticsView() {
+    // --- STATISTICS & SENTENCE BROWSER VIEW ---
+    function renderStatsTable() {
       if (sentences.length === 0) return;
 
-      // Calculate overall KPIs
+      // 1. KPI Calculation
       const totalSentences = sentences.length;
-      let masteredCount = 0;
-      let totalAttempts = 0;
-      let totalCorrect = 0;
+      const masteredCount = sentences.filter(s => (s.level || 0) >= 4).length;
+      const totalAnswers = sentences.reduce((acc, s) => acc + (s.total || 0), 0);
+      const totalCorrect = sentences.reduce((acc, s) => acc + (s.correct || 0), 0);
+      const overallAccuracy = totalAnswers > 0 ? Math.round((totalCorrect / totalAnswers) * 100) : 0;
 
-      const categoryStats = {};
+      document.getElementById('kpi-total').textContent = totalSentences;
+      document.getElementById('kpi-mastered').textContent = masteredCount;
+      document.getElementById('kpi-accuracy').textContent = `${overallAccuracy}%`;
+      document.getElementById('kpi-answers').textContent = totalAnswers;
 
+      // 2. Category Progress Breakdown
+      const catMap = {};
       sentences.forEach(s => {
-        const st = s.stats || { level: 0, attempts: 0, correct: 0 };
-        if (st.level >= 4) masteredCount++;
-        totalAttempts += (st.attempts || 0);
-        totalCorrect += (st.correct || 0);
-
-        const cat = s.category || 'Általános';
-        if (!categoryStats[cat]) {
-          categoryStats[cat] = { count: 0, mastered: 0, attempts: 0, correct: 0 };
-        }
-        categoryStats[cat].count++;
-        if (st.level >= 4) categoryStats[cat].mastered++;
-        categoryStats[cat].attempts += (st.attempts || 0);
-        categoryStats[cat].correct += (st.correct || 0);
+        const cat = s.category || 'ÁLTALÁNOS';
+        if (!catMap[cat]) catMap[cat] = { total: 0, mastered: 0 };
+        catMap[cat].total++;
+        if ((s.level || 0) >= 4) catMap[cat].mastered++;
       });
 
-      const overallAccuracy = totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
-
-      document.getElementById('kpi-total').innerText = totalSentences;
-      document.getElementById('kpi-mastered').innerText = masteredCount;
-      document.getElementById('kpi-accuracy').innerText = `${overallAccuracy}%`;
-      document.getElementById('kpi-attempts').innerText = totalAttempts;
-
-      // Render Category Progress List
-      const catListContainer = document.getElementById('category-progress-list');
-      catListContainer.innerHTML = '';
-
-      Object.keys(categoryStats).sort().forEach(catKey => {
-        const c = categoryStats[catKey];
-        const masteredPct = Math.round((c.mastered / c.count) * 100);
-        const catAcc = c.attempts > 0 ? Math.round((c.correct / c.attempts) * 100) : 0;
-
-        const catRow = document.createElement('div');
-        catRow.className = 'space-y-1';
-        catRow.innerHTML = `
-          <div class="flex items-center justify-between text-xs sm:text-sm font-medium">
-            <span class="font-semibold text-slate-800 dark:text-slate-200">${catKey} (${c.count} mondat)</span>
-            <span class="text-slate-500 dark:text-slate-400">Megtanult: ${masteredPct}% · Pontosság: ${catAcc}%</span>
+      const catProgressContainer = document.getElementById('category-progress-list');
+      catProgressContainer.innerHTML = '';
+      Object.keys(catMap).forEach(cat => {
+        const data = catMap[cat];
+        const pct = Math.round((data.mastered / data.total) * 100);
+        const row = document.createElement('div');
+        row.className = 'flex flex-col gap-1';
+        row.innerHTML = `
+          <div class="flex items-center justify-between text-xs font-semibold">
+            <span class="text-slate-700 dark:text-slate-300">${escapeHtml(cat)}</span>
+            <span class="text-slate-400">${data.mastered}/${data.total} (${pct}%)</span>
           </div>
-          <div class="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-brand-500 to-emerald-500 rounded-full transition-all duration-500" style="width: ${masteredPct}%"></div>
+          <div class="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
+            <div class="h-full bg-blue-500 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
           </div>
         `;
-        catListContainer.appendChild(catRow);
+        catProgressContainer.appendChild(row);
       });
 
-      renderStatsTable();
-    }
+      // 3. Sentence List Render (Search & Sort)
+      const searchQuery = (document.getElementById('stats-search').value || '').toLowerCase();
+      const sortOption = document.getElementById('stats-sort').value;
 
-    function renderStatsTable() {
-      const searchVal = document.getElementById('stats-search').value.toLowerCase().trim();
-      const sortBy = document.getElementById('stats-sort').value;
-      const tbody = document.getElementById('stats-table-body');
-      tbody.innerHTML = '';
+      let list = [...sentences];
 
-      // Filter
-      let filtered = sentences.filter(s => {
-        const hu = (s.hu || '').toLowerCase();
-        const en = (s.en || []).join(' ').toLowerCase();
-        const id = (s.id || '').toLowerCase();
-        const cat = (s.category || '').toLowerCase();
-        return hu.includes(searchVal) || en.includes(searchVal) || id.includes(searchVal) || cat.includes(searchVal);
-      });
+      if (searchQuery) {
+        list = list.filter(s => 
+          s.hu.toLowerCase().includes(searchQuery) ||
+          s.en.toLowerCase().includes(searchQuery) ||
+          s.id.toLowerCase().includes(searchQuery) ||
+          (s.category && s.category.toLowerCase().includes(searchQuery))
+        );
+      }
 
-      // Sort
-      filtered.sort((a, b) => {
-        const stA = a.stats || { wrong: 0, attempts: 0, correct: 0, level: 0 };
-        const stB = b.stats || { wrong: 0, attempts: 0, correct: 0, level: 0 };
+      if (sortOption === 'errors') {
+        list.sort((a, b) => ((b.total || 0) - (b.correct || 0)) - ((a.total || 0) - (a.correct || 0)));
+      } else if (sortOption === 'level') {
+        list.sort((a, b) => (a.level || 0) - (b.level || 0));
+      } else if (sortOption === 'id') {
+        list.sort((a, b) => a.id.localeCompare(b.id));
+      }
 
-        if (sortBy === 'ERRORS_DESC') {
-          return (stB.wrong || 0) - (stA.wrong || 0);
-        } else if (sortBy === 'ACCURACY_ASC') {
-          const accA = stA.attempts > 0 ? stA.correct / stA.attempts : 1;
-          const accB = stB.attempts > 0 ? stB.correct / stB.attempts : 1;
-          return accA - accB;
-        } else if (sortBy === 'LEVEL_ASC') {
-          return (stA.level || 0) - (stB.level || 0);
-        } else {
-          return a.id.localeCompare(b.id);
+      const sentenceListContainer = document.getElementById('stats-sentence-list');
+      sentenceListContainer.innerHTML = '';
+
+      if (list.length === 0) {
+        sentenceListContainer.innerHTML = '<div class="text-center py-6 text-xs text-slate-400">Nincs a keresésnek megfelelő mondat.</div>';
+        return;
+      }
+
+      list.forEach(s => {
+        const corr = s.correct || 0;
+        const tot = s.total || 0;
+        const pct = tot > 0 ? Math.round((corr / tot) * 100) : 0;
+        const lvl = Math.min(5, Math.max(0, s.level || 0));
+
+        let dotsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+          dotsHtml += `<div class="w-1.5 h-1.5 rounded-full ${i <= lvl ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}"></div>`;
         }
-      });
 
-      // Render Rows
-      filtered.forEach(s => {
-        const st = s.stats || { attempts: 0, correct: 0, wrong: 0, level: 0 };
-        const acc = st.attempts > 0 ? Math.round((st.correct / st.attempts) * 100) : 0;
-
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition';
-
-        tr.innerHTML = `
-          <td class="p-3">
-            <span class="font-mono font-semibold text-slate-900 dark:text-white block">${s.id}</span>
-            <span class="text-xs text-slate-400">${s.category || 'Általános'}</span>
-          </td>
-          <td class="p-3 font-medium text-slate-900 dark:text-slate-100 max-w-xs">${s.hu}</td>
-          <td class="p-3 text-xs text-slate-600 dark:text-slate-300 max-w-xs">
-            ${s.en.map(item => `<div>• ${item}</div>`).join('')}
-          </td>
-          <td class="p-3 text-center">
-            <span class="px-2 py-1 rounded-full text-xs font-bold ${st.level >= 4 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'}">
-              ${st.level}/5
-            </span>
-          </td>
-          <td class="p-3 text-right">
-            <span class="font-semibold text-slate-900 dark:text-white block">${acc}%</span>
-            <span class="text-xs text-slate-400">${st.correct} / ${st.attempts} (Hibák: ${st.wrong})</span>
-          </td>
+        const item = document.createElement('div');
+        item.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 flex flex-col gap-1.5 text-xs';
+        item.innerHTML = `
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono font-semibold text-blue-500">#${escapeHtml(s.id)}</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 uppercase">${escapeHtml(s.category || 'ÁLTALÁNOS')}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400 font-medium">${pct}% (${corr}/${tot})</span>
+              <div class="flex items-center gap-0.5">${dotsHtml}</div>
+            </div>
+          </div>
+          <div class="font-semibold text-slate-800 dark:text-slate-200">${escapeHtml(s.hu)}</div>
+          <div class="text-slate-500 dark:text-slate-400 italic">${escapeHtml(s.en)}</div>
         `;
-
-        tbody.appendChild(tr);
+        sentenceListContainer.appendChild(item);
       });
     }
 
-    // ================= SETTINGS MODAL =================
+    // --- SETTINGS MODAL HANDLERS ---
     function openSettingsModal() {
-      document.getElementById('setting-url').value = localStorage.getItem(LOCAL_STORAGE_URL_KEY) || '';
-      document.getElementById('setting-key').value = localStorage.getItem(LOCAL_STORAGE_API_KEY) || '';
-      document.getElementById('settings-status-box').classList.add('hidden');
-      document.getElementById('modal-settings').classList.remove('hidden');
+      document.getElementById('setting-url').value = localStorage.getItem(LS_URL_KEY) || '';
+      document.getElementById('setting-key').value = localStorage.getItem(LS_KEY_KEY) || '';
+      document.getElementById('settings-modal').classList.remove('hidden');
     }
 
     function closeSettingsModal() {
-      document.getElementById('modal-settings').classList.add('hidden');
+      document.getElementById('settings-modal').classList.add('hidden');
     }
 
-    async function testAndSaveSettings() {
+    function saveSettings() {
       const url = document.getElementById('setting-url').value.trim();
       const key = document.getElementById('setting-key').value.trim();
-      const statusBox = document.getElementById('settings-status-box');
-      const btnSave = document.getElementById('btn-save-settings');
 
-      if (!url || !key) {
-        statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 dark:border-rose-800';
-        statusBox.innerText = 'Kérlek töltsd ki mindkét mezőt!';
-        statusBox.classList.remove('hidden');
-        return;
-      }
+      if (url) localStorage.setItem(LS_URL_KEY, url);
+      else localStorage.removeItem(LS_URL_KEY);
 
-      btnSave.disabled = true;
-      btnSave.innerHTML = '<span class="dot-pulse">Tesztelés...</span>';
+      if (key) localStorage.setItem(LS_KEY_KEY, key);
+      else localStorage.removeItem(LS_KEY_KEY);
 
-      try {
-        const fullUrl = `${url}?key=${encodeURIComponent(key)}`;
-        const response = await fetch(fullUrl, { method: 'GET', redirect: 'follow' });
-        const json = await response.json();
-
-        if (json.status === 'ok') {
-          localStorage.setItem(LOCAL_STORAGE_URL_KEY, url);
-          localStorage.setItem(LOCAL_STORAGE_API_KEY, key);
-          
-          sentences = json.sentences || [];
-          populateCategoryDropdown();
-          updateSyncStatus('SYNCED', 'Szinkronizálva');
-
-          statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
-          statusBox.innerText = `Sikeres kapcsolat! ${sentences.length} mondat letöltve.`;
-          statusBox.classList.remove('hidden');
-
-          setTimeout(() => {
-            closeSettingsModal();
-            nextSentence();
-          }, 1200);
-        } else {
-          statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 dark:border-rose-800';
-          statusBox.innerText = `API hiba: ${json.message}`;
-          statusBox.classList.remove('hidden');
-          updateSyncStatus('ERROR', 'API Hiba');
-        }
-      } catch (err) {
-        console.error("Test connection error:", err);
-        statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 dark:border-rose-800';
-        statusBox.innerText = 'Sikertelen kapcsolódás! Ellenőrizd a Web App URL-t és a hálózatot.';
-        statusBox.classList.remove('hidden');
-        updateSyncStatus('ERROR', 'Kapcsolódási hiba');
-      } finally {
-        btnSave.disabled = false;
-        btnSave.innerHTML = '<span>Kapcsolat tesztelése és mentés</span>';
-      }
+      closeSettingsModal();
+      loadSentences();
     }
 
     function copyQuickSetupLink() {
@@ -1303,54 +1090,40 @@
       const key = document.getElementById('setting-key').value.trim();
 
       if (!url || !key) {
-        showToast('Először add meg az URL-t és az API kulcsot!', 'error');
+        alert('Kérlek add meg a Web App URL-t és az API kulcsot a link generálásához!');
         return;
       }
 
-      const shareUrl = `${window.location.origin}${window.location.pathname}?url=${encodeURIComponent(url)}&key=${encodeURIComponent(key)}`;
-      
-      // Fallback copy using temporary textarea
-      const tempArea = document.createElement('textarea');
-      tempArea.value = shareUrl;
-      document.body.appendChild(tempArea);
-      tempArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(tempArea);
+      const baseUrl = window.location.origin + window.location.pathname;
+      const fullLink = `${baseUrl}?url=${encodeURIComponent(url)}&key=${encodeURIComponent(key)}`;
 
-      showToast('Gyorsbeállító link a vágólapra másolva!', 'success');
+      // Safe copy to clipboard
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(fullLink);
+      } else {
+        const input = document.createElement('input');
+        input.value = fullLink;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+      }
+
+      const copyBtnText = document.getElementById('copy-link-text');
+      const originalText = copyBtnText.textContent;
+      copyBtnText.textContent = '✓ Kimásolva a vágólapra!';
+      setTimeout(() => { copyBtnText.textContent = originalText; }, 2500);
     }
 
-    function loadSampleDataOffline() {
-      sentences = SAMPLE_SENTENCES;
-      populateCategoryDropdown();
-      updateSyncStatus('NOT_CONFIGURED', 'Offline Demó');
-      closeSettingsModal();
-      nextSentence();
-      showToast('Minta adatok betöltve offline módban!', 'info');
-    }
-
-    // ================= TOAST SYSTEM =================
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-
-      let colors = 'bg-slate-900 text-white dark:bg-white dark:text-slate-900';
-      if (type === 'success') colors = 'bg-emerald-600 text-white shadow-emerald-600/30';
-      if (type === 'error') colors = 'bg-rose-600 text-white shadow-rose-600/30';
-
-      toast.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-semibold transition-all duration-300 transform translate-y-4 opacity-0 flex items-center gap-2 ${colors}`;
-      toast.innerText = message;
-
-      container.appendChild(toast);
-
-      requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-4', 'opacity-0');
-      });
-
-      setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-2');
-        setTimeout(() => toast.remove(), 300);
-      }, 3500);
+    // Utility HTML escaper
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
   </script>
 </body>
