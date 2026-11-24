@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
   <title>MondatMester – Angol mondatgyakorló</title>
 
   <!-- PWA & Mobile Full-Screen Head Meta Tags -->
-  <meta name="robots" content="noindex, nofollow">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
@@ -14,6 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="MondatMester">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -43,7 +44,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    /* Strict Mobile Viewport Overflow Protection */
+    /* Strict Mobile Viewport & Overflow Protection */
     html, body {
       max-width: 100vw;
       overflow-x: hidden;
@@ -66,7 +67,7 @@
       padding-bottom: max(1rem, env(safe-area-inset-bottom));
     }
     
-    /* Smooth Transitions & Custom Scrollbars */
+    /* Scrollbars */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -77,11 +78,6 @@
     ::-webkit-scrollbar-thumb {
       background: rgba(148, 163, 184, 0.3);
       border-radius: 9999px;
-    }
-    
-    .glass-card {
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
     }
   </style>
 </head>
@@ -137,10 +133,10 @@
 
         <!-- Mobile View Switcher (Segmented Control Row - Zero Overflow) -->
         <nav class="flex sm:hidden items-center grid grid-cols-2 gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/50 w-full">
-          <button id="nav-practice-mob" onclick="switchTab('practice')" class="w-full py-2 text-center text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-sm bg-blue-600 text-white">
+          <button id="nav-practice-mob" onclick="switchTab('practice')" class="w-full py-2 text-center text-xs font-semibold rounded-lg transition-all shadow-sm bg-blue-600 text-white">
             Gyakorlás
           </button>
-          <button id="nav-stats-mob" onclick="switchTab('stats')" class="w-full py-2 text-center text-xs sm:text-sm font-semibold rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+          <button id="nav-stats-mob" onclick="switchTab('stats')" class="w-full py-2 text-center text-xs font-semibold rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
             Statisztika
           </button>
         </nav>
@@ -172,7 +168,7 @@
             <div class="flex flex-col gap-1">
               <label class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Téma filter</label>
               <select id="filter-category" onchange="onFilterChange()" class="w-full bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs sm:text-sm rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="ALL">Minden tema</option>
+                <option value="ALL">Minden téma</option>
               </select>
             </div>
             <!-- Practice Mode Dropdown -->
@@ -373,7 +369,7 @@
       {
         id: "M001",
         hu: "Már három éve itt dolgozom.",
-        en: "I've been working here for three years. | I have been working here for 3 years.",
+        en: ["I've been working here for three years.", "I have been working here for 3 years."],
         category: "IGEIDŐK",
         tip: "Használj Present Perfect Continuous-t (have been working), mert a cselekvés a múltban kezdődött és a jelenben is tart.",
         correct: 0,
@@ -383,7 +379,7 @@
       {
         id: "M002",
         hu: "Ha lett volna több időm, felhívtalak volna.",
-        en: "If I had had more time, I would have called you. | If I'd had more time, I'd have called you.",
+        en: ["If I had had more time, I would have called you.", "If I'd had more time, I'd have called you."],
         category: "FELTÉTELES MÓD",
         tip: "Harmadik típusú feltételes mondat (Third Conditional): If + Past Perfect, would + have + V3.",
         correct: 0,
@@ -393,7 +389,7 @@
       {
         id: "M003",
         hu: "Meg tudnád mondani, hol van a legközelebbi buszmegálló?",
-        en: "Could you tell me where the nearest bus stop is? | Can you tell me where the nearest bus stop is?",
+        en: ["Could you tell me where the nearest bus stop is?", "Can you tell me where the nearest bus stop is?"],
         category: "KIFOGÁSTALAN KÉRÉSEK",
         tip: "Közvetett kérdésnél a mellékmondat szórendje egyenes marad (where the nearest bus stop is).",
         correct: 0,
@@ -451,7 +447,8 @@
     // --- APPLICATION STATE ---
     let sentences = [];
     let currentSentence = null;
-    let currentView = 'practice'; // 'practice' or 'stats'
+    let previousSentenceId = null;
+    let currentView = 'practice';
     let sessionTotal = 0;
     let sessionCorrect = 0;
     let isEvaluated = false;
@@ -507,9 +504,17 @@
       if (urlParam && keyParam) {
         localStorage.setItem(LS_URL_KEY, urlParam);
         localStorage.setItem(LS_KEY_KEY, keyParam);
-        // Clean URL without reloading
         window.history.replaceState({}, document.title, window.location.pathname);
       }
+    }
+
+    // --- SAFE ARRAY / PIPE-DELIMITED STRING EXTRACTION FIX ---
+    function getAcceptedList(enData) {
+      if (!enData) return [];
+      if (Array.isArray(enData)) {
+        return enData.map(s => String(s).trim()).filter(Boolean);
+      }
+      return String(enData).split('|').map(s => s.trim()).filter(Boolean);
     }
 
     // --- BACKEND API SYNC ---
@@ -684,6 +689,12 @@
         if (weakPool.length > 0) pool = weakPool;
       }
 
+      // Filter out immediate repeat if pool size > 1
+      if (pool.length > 1 && previousSentenceId) {
+        const nonRepeatPool = pool.filter(s => s.id !== previousSentenceId);
+        if (nonRepeatPool.length > 0) pool = nonRepeatPool;
+      }
+
       // Weighted random selection (lower level = higher weight)
       const weights = pool.map(s => Math.max(1, 6 - (s.level || 0)));
       const totalWeight = weights.reduce((a, b) => a + b, 0);
@@ -698,6 +709,7 @@
         }
       }
 
+      previousSentenceId = selected.id;
       currentSentence = selected;
       renderCurrentSentence();
     }
@@ -754,7 +766,7 @@
     // --- CONTRACTION & STRING NORMALIZATION ---
     function normalizeText(text) {
       if (!text) return '';
-      let str = text.toLowerCase()
+      let str = String(text).toLowerCase()
         .replace(/[\u2018\u2019]/g, "'") // Normalize smart apostrophes
         .replace(/[.?!,;:]/g, '')        // Strip punctuation
         .trim();
@@ -763,11 +775,6 @@
       const words = str.split(/\s+/);
       const expandedWords = words.map(w => CONTRACTIONS[w] || w);
       return expandedWords.join(' ').replace(/\s+/g, ' ');
-    }
-
-    // Split accepted translations string by '|'
-    function getAcceptedList(enString) {
-      return enString.split('|').map(s => s.trim()).filter(Boolean);
     }
 
     // --- SMART EVALUATION ---
@@ -824,7 +831,6 @@
       const userWords = userRaw.split(/\s+/);
       const targetWords = closestAccepted.split(/\s+/);
 
-      // Simple visual word diff
       let html = '<div class="flex flex-wrap gap-1.5 text-sm sm:text-base font-medium leading-relaxed">';
       
       userWords.forEach((word) => {
@@ -869,7 +875,7 @@
           </div>
         `;
       } else {
-        const closestTarget = acceptedList[0];
+        const closestTarget = acceptedList[0] || '';
         const wordDiffHtml = generateWordDiff(userRaw, closestTarget);
 
         container.innerHTML = `
@@ -917,7 +923,7 @@
       
       // Revert stats
       currentSentence.correct = (currentSentence.correct || 0) + 1;
-      currentSentence.level = Math.min(5, (currentSentence.level || 0) + 2); // compensate subtraction
+      currentSentence.level = Math.min(5, (currentSentence.level || 0) + 2); // compensate previous subtraction
       sessionCorrect++;
 
       // Update feedback display to success state
@@ -936,7 +942,11 @@
 
       const currentAcc = getAcceptedList(currentSentence.en);
       if (!currentAcc.includes(lastUserAnswer)) {
-        currentSentence.en += ` | ${lastUserAnswer}`;
+        if (Array.isArray(currentSentence.en)) {
+          currentSentence.en.push(lastUserAnswer);
+        } else {
+          currentSentence.en = currentSentence.en ? `${currentSentence.en} | ${lastUserAnswer}` : lastUserAnswer;
+        }
       }
 
       // Mark correct as well
@@ -1005,12 +1015,13 @@
       let list = [...sentences];
 
       if (searchQuery) {
-        list = list.filter(s => 
-          s.hu.toLowerCase().includes(searchQuery) ||
-          s.en.toLowerCase().includes(searchQuery) ||
-          s.id.toLowerCase().includes(searchQuery) ||
-          (s.category && s.category.toLowerCase().includes(searchQuery))
-        );
+        list = list.filter(s => {
+          const accList = getAcceptedList(s.en).join(' ');
+          return s.hu.toLowerCase().includes(searchQuery) ||
+                 accList.toLowerCase().includes(searchQuery) ||
+                 s.id.toLowerCase().includes(searchQuery) ||
+                 (s.category && s.category.toLowerCase().includes(searchQuery));
+        });
       }
 
       if (sortOption === 'errors') {
@@ -1040,6 +1051,8 @@
           dotsHtml += `<div class="w-1.5 h-1.5 rounded-full ${i <= lvl ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}"></div>`;
         }
 
+        const formattedEn = getAcceptedList(s.en).join(' | ');
+
         const item = document.createElement('div');
         item.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 flex flex-col gap-1.5 text-xs';
         item.innerHTML = `
@@ -1054,7 +1067,7 @@
             </div>
           </div>
           <div class="font-semibold text-slate-800 dark:text-slate-200">${escapeHtml(s.hu)}</div>
-          <div class="text-slate-500 dark:text-slate-400 italic">${escapeHtml(s.en)}</div>
+          <div class="text-slate-500 dark:text-slate-400 italic">${escapeHtml(formattedEn)}</div>
         `;
         sentenceListContainer.appendChild(item);
       });
@@ -1097,7 +1110,6 @@
       const baseUrl = window.location.origin + window.location.pathname;
       const fullLink = `${baseUrl}?url=${encodeURIComponent(url)}&key=${encodeURIComponent(key)}`;
 
-      // Safe copy to clipboard
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(fullLink);
       } else {
